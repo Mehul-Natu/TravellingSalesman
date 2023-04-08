@@ -4,7 +4,7 @@ import java.util.List;
 
 
 //should we break the method of adding edge and neighbour from weighted and unweighted interface??
-public interface WeightedAdjacencyListGraph<NodeValue, NodeKeyValue, EdgeWeight> {
+public interface WeightedAdjacencyListGraph<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>> {
 
     int getSize();
 

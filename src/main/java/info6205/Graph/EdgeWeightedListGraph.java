@@ -2,11 +2,12 @@ package info6205.Graph;
 
 import java.util.*;
 
-public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight> implements WeightedAdjacencyListGraph<NodeValue, NodeKeyValue, EdgeWeight> {
+public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>>
+        implements WeightedAdjacencyListGraph<NodeValue, NodeKeyValue, EdgeWeight> {
 
 
     protected final Map<Key<NodeKeyValue>, Node<NodeValue, NodeKeyValue>> nodes;
-    protected final Map<Key<NodeKeyValue>, List<Node<NodeValue, NodeKeyValue>>> neighbourMap;
+    protected final Map<Key<NodeKeyValue>, List<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>>> neighbourMap;
 
     //now every thing depends on the implementation of adding weighted edge of directed and undirected
     protected final Set<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>> edges;
@@ -46,9 +47,10 @@ public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight>
         }
     }
 
-    //abstract boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight);
+    public abstract boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight);
 
-    protected abstract boolean addNeighbour(Node<NodeValue, NodeKeyValue> nodeValue1, Node<NodeValue, NodeKeyValue> nodeValue2);
+    protected abstract boolean addNeighbour(Node<NodeValue, NodeKeyValue> nodeValue1, Node<NodeValue, NodeKeyValue> nodeValue2,
+                                            EdgeWeight edgeWeight);
 
 
 

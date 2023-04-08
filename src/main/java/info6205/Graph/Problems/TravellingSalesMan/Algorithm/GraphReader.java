@@ -1,5 +1,6 @@
 package info6205.Graph.Problems.TravellingSalesMan.Algorithm;
 
+import info6205.Graph.EdgeCreator;
 import info6205.Graph.Node;
 import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.Key;
 import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.LatLongId;
@@ -15,13 +16,14 @@ import java.util.HashSet;
 
 public class GraphReader {
 
-    public static UndirectedEdgeWeighedListGraph<String, LatLongId, Double> getGraphFromFile(String fileName) {
+    public static UndirectedEdgeWeighedListGraph<String, LatLongId, Double> getGraphFromFile(String fileName,
+                                                                                             EdgeCreator<String, LatLongId, Double> edgeCreator) {
         try {
             String path = new File(".").getCanonicalPath();
 
             File file = new File(path + "/csvData/" + fileName);
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
-            UndirectedEdgeWeighedListGraph<String, LatLongId, Double> graph = new UndirectedEdgeWeighedListGraph<>();
+            UndirectedEdgeWeighedListGraph<String, LatLongId, Double> graph = new UndirectedEdgeWeighedListGraph<>(edgeCreator);
             System.out.println(bufferedReader.readLine());
             HashSet<String> set = new HashSet<>();
             while (true) {

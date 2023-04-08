@@ -4,6 +4,8 @@ package info6205.Graph.Problems.TravellingSalesMan.GraphImpl;
 import info6205.Graph.Edge;
 import info6205.Graph.Node;
 
+import java.util.Objects;
+
 public class EdgeALG implements Edge<Node<String, LatLongId>, Double> {
 
     private final Node<String, LatLongId> firstNode;
@@ -39,5 +41,17 @@ public class EdgeALG implements Edge<Node<String, LatLongId>, Double> {
                 ", secondNode=" + secondNode +
                 ", edgeWeight=" + edgeWeight +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EdgeALG edgeALG)) return false;
+        return getFirstNode().equals(edgeALG.getFirstNode()) && getSecondNode().equals(edgeALG.getSecondNode()) && getEdgeWeight().equals(edgeALG.getEdgeWeight());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getFirstNode(), getSecondNode(), getEdgeWeight());
     }
 }
