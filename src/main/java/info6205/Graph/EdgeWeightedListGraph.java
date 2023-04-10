@@ -1,5 +1,7 @@
 package info6205.Graph;
 
+import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.LatLongId;
+
 import java.util.*;
 
 public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>>
@@ -10,13 +12,13 @@ public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
     protected final Map<Key<NodeKeyValue>, List<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>>> neighbourMap;
 
     //now every thing depends on the implementation of adding weighted edge of directed and undirected
-    protected final Set<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>> edges;
+    protected final Map<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>, Integer> edges;
 
 
     public EdgeWeightedListGraph() {
         this.nodes = new HashMap<>();
         this.neighbourMap = new HashMap<>();
-        this.edges = new HashSet<>();
+        this.edges = new HashMap<>();
     }
 
     //@Override
@@ -47,10 +49,16 @@ public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
         }
     }
 
+    public List<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>> getNeighbours(Key<NodeKeyValue> key) {
+        return this.neighbourMap.getOrDefault(key, null);
+    }
+
     public abstract boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight);
 
     protected abstract boolean addNeighbour(Node<NodeValue, NodeKeyValue> nodeValue1, Node<NodeValue, NodeKeyValue> nodeValue2,
                                             EdgeWeight edgeWeight);
+
+    public abstract Map<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>, Integer> getEdges();
 
 
 

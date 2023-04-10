@@ -1,7 +1,9 @@
 package info6205.Graph;
 
 
+import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.LatLongId;
 import info6205.Graph.Utils.IndexMinPQ;
+import info6205.Graph.Utils.PointPlotter;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +19,8 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
         super();
         this.edgeCreator = edgeCreator;
     }
+
+
 
     //how to stop this method being called if weighted Edge is used
     @Override
@@ -41,16 +45,21 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
     }
 
     @Override
+    public Map<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>, Integer> getEdges() {
+        return edges;
+    }
+
+    @Override
     public boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight) {
         try {
             Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge = edgeCreator.createEdge(node1, node2, edgeWeight);
             ///todo mehul to add reverse node edge condition
 
-            if (edges.contains(edge)) {
-                return true;
+            if (edges.containsKey(edge)) {
+                edges.put(edge, edges.get(edge) + 1);
+            } else {
+                edges.put(edge, 1);
             }
-
-            edges.add(edge);
             addNeighbour(node1, node2, edgeWeight);
 
 
@@ -63,7 +72,7 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
 
     public void test() {
         Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge = this.neighbourMap.get(getNodes().get(0).getKey()).get(0);
-        if (this.edges.contains(edge)) {
+        if (this.edges.containsKey(edge)) {
             System.out.println("Hash code working fine");
         }
     }
@@ -163,9 +172,18 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
                 }
             }
 
+            //adding edges in MSt by goodEdges
+
+            for (Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge : goodEdges) {
+                graphMst.addEdge(edge.getFirstNode(), edge.getSecondNode(), edge.getEdgeWeight());
+            }
+
+            PointPlotter pointPlotter = new PointPlotter();
+
+            pointPlotter.plotGraph((UndirectedEdgeWeighedListGraph<String, LatLongId, Double>) graphMst);
 
 
-            return null;
+            return graphMst;
         } catch (Exception e) {
             System.out.println("error while creating MST from Prim's e" + e);
             throw e;
