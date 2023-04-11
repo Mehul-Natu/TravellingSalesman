@@ -35,6 +35,11 @@ public class EdgeALG implements Edge<Node<String, LatLongId>, Double> {
     }
 
     @Override
+    public Edge<Node<String, LatLongId>, Double> createReverseEdge() {
+        return new EdgeALG(this.secondNode, this.firstNode, this.edgeWeight);
+    }
+
+    @Override
     public String toString() {
         return "EdgeALG {" +
                 "firstNode=" + firstNode +

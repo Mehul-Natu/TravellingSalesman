@@ -53,21 +53,24 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
     public boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight) {
         try {
             Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge = edgeCreator.createEdge(node1, node2, edgeWeight);
+            Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edgeReverse = edgeCreator.createEdge(node2, node1, edgeWeight);
             ///todo mehul to add reverse node edge condition
 
-            if (edges.containsKey(edge)) {
-                edges.put(edge, edges.get(edge) + 1);
+            if (edges.containsKey(edge) || edges.containsKey(edgeReverse)) {
+                Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> existingEdgeDirection =
+                        edges.containsKey(edge) ? edge : edgeReverse;
+
+                edges.put(existingEdgeDirection, edges.get(existingEdgeDirection) + 1);
             } else {
                 edges.put(edge, 1);
             }
             addNeighbour(node1, node2, edgeWeight);
 
-
+        return true;
         } catch (Exception e) {
             System.out.println("Error while adding edge e: " + e);
             return false;
         }
-        return false;
     }
 
     public void test() {
@@ -135,9 +138,6 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
                 SingleNodeEdgeWeight<EdgeWeight, NodeValue, NodeKeyValue>
                         currMinEdge = indexedMinEdgePQ.minKey();
 
-                if (visited.contains(nodeIndexMap.get(currMinEdge.neighbour.getKey()))) {
-                    System.out.println("hello");
-                }
                 goodEdges.add(edgeCreator.createEdge(
                         currMinEdge.neighbour, indexNodeMap.get(indexOfCurrentMinEdge), currMinEdge.edgeWeight));
 
@@ -178,9 +178,9 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
                 graphMst.addEdge(edge.getFirstNode(), edge.getSecondNode(), edge.getEdgeWeight());
             }
 
-            PointPlotter pointPlotter = new PointPlotter();
+            //PointPlotter pointPlotter = new PointPlotter();
 
-            pointPlotter.plotGraph((UndirectedEdgeWeighedListGraph<String, LatLongId, Double>) graphMst);
+            //pointPlotter.plotGraph((UndirectedEdgeWeighedListGraph<String, LatLongId, Double>) graphMst);
 
 
             return graphMst;
@@ -209,5 +209,4 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
             return this.edgeWeight.compareTo((EdgeWeight) o.edgeWeight);
         }
     }
-
 }

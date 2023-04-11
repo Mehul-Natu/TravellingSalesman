@@ -6,4 +6,6 @@ public interface Edge<Node, Weight> {
     Node getSecondNode();
     Weight getEdgeWeight();
 
+    Edge<Node, Weight> createReverseEdge();
+
 }

@@ -10,17 +10,19 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class PointPlotter extends JFrame {
-    private final ArrayList<Double> xValues;
-    private final ArrayList<Double> yValues;
-    private final ArrayList<Double> x1Values;
-    private final ArrayList<Double> y1Values;
-    private final ArrayList<Double> x2Values;
-    private final ArrayList<Double> y2Values;
+    private final ArrayList<Pair<Double, Color>> xValues;
+    private final ArrayList<Pair<Double, Color>> yValues;
+    private final ArrayList<Pair<Double, Color>> x1Values;
+    private final ArrayList<Pair<Double, Color>> y1Values;
+    private final ArrayList<Pair<Double, Color>> x2Values;
+    private final ArrayList<Pair<Double, Color>> y2Values;
 
     private final double xPresicision = 1000;
     private final double yPresicision = 1000;
     private final double xAxisMove = -51.5;
     private final double yAxisMove = 0.15;
+
+    private static PointPlotter pointPlotter;
 
     public PointPlotter() {
         super("Point Plotter");
@@ -36,17 +38,25 @@ public class PointPlotter extends JFrame {
         y2Values = new ArrayList<>();
     }
 
-    public void addPoint(double x, double y) {
-        xValues.add(x + xAxisMove);
-        yValues.add(y + yAxisMove);
+    public static void addPointOuter(double x1, double y1, Color color) {
+        pointPlotter.addPoint(x1, y1, color);
+    }
+
+    public void addPoint(double x, double y, Color color) {
+        xValues.add(new Pair<>(x + xAxisMove, color));
+        yValues.add(new Pair<>(y + yAxisMove, color));
         repaint();
     }
 
-    public void addLine(double x1, double y1, double x2, double y2) {
-        x1Values.add(x1 + xAxisMove);
-        y1Values.add(y1 + yAxisMove);
-        x2Values.add(x2 + xAxisMove);
-        y2Values.add(y2 + yAxisMove);
+    public static void addLineOuter(double x1, double y1, double x2, double y2, Color color) {
+        pointPlotter.addLine(x1, y1, x2, y2, color);
+    }
+
+    public void addLine(double x1, double y1, double x2, double y2, Color color) {
+        x1Values.add(new Pair<>(x1 + xAxisMove, color));
+        y1Values.add(new Pair<>(y1 + yAxisMove, color));
+        x2Values.add(new Pair<>(x2 + xAxisMove, color));
+        y2Values.add(new Pair<>(y2 + yAxisMove, color));
         repaint();
     }
 
@@ -72,35 +82,58 @@ public class PointPlotter extends JFrame {
         }
 
         // Plot the points
-        g2d.setColor(Color.RED);
+        //g2d.setColor(Color.RED);
         for (int i = 0; i < xValues.size(); i++) {
-            int x = (int) Math.round(xValues.get(i) * xPresicision);
-            int y = (int) Math.round(yValues.get(i) * yPresicision);
+            g2d.setColor(xValues.get(i).getSecond());
+            int x = (int) Math.round(xValues.get(i).getFirst() * xPresicision);
+            int y = (int) Math.round(yValues.get(i).getFirst() * yPresicision);
             g2d.fillOval(x - 2, y - 2, 4, 4);
         }
 
         // Draw the lines
-        g2d.setColor(Color.BLUE);
+        //g2d.setColor(Color.BLUE);
         for (int i = 0; i < x1Values.size(); i++) {
-            int x1 = (int) Math.round(x1Values.get(i) * xPresicision);
-            int y1 = (int) Math.round(y1Values.get(i) * yPresicision);
-            int x2 = (int) Math.round(x2Values.get(i) * xPresicision);
-            int y2 = (int) Math.round(y2Values.get(i) * yPresicision);
+            g2d.setColor(x1Values.get(i).getSecond());
+            int x1 = (int) Math.round(x1Values.get(i).getFirst() * xPresicision);
+            int y1 = (int) Math.round(y1Values.get(i).getFirst() * yPresicision);
+            int x2 = (int) Math.round(x2Values.get(i).getFirst() * xPresicision);
+            int y2 = (int) Math.round(y2Values.get(i).getFirst() * yPresicision);
             g2d.drawLine(x1, y1, x2, y2);
         }
     }
 
     public static void plotGraph(UndirectedEdgeWeighedListGraph<String, LatLongId, Double> graph) {
-        PointPlotter plotter = new PointPlotter();
-        plotter.setVisible(true);
+        if (pointPlotter == null) {
+            pointPlotter = new PointPlotter();
+            pointPlotter.setVisible(true);
+        }
 
         for (Node<String, LatLongId> node : graph.getNodes()) {
-            plotter.addPoint(node.getKey().getValue().getLatitude(), node.getKey().getValue().getLongitude());
+            pointPlotter.addPoint(node.getKey().getValue().getLatitude(), node.getKey().getValue().getLongitude(), Color.RED);
         }
 
         for (Edge<Node<String, LatLongId>, Double> edge : graph.getEdges().keySet()) {
-            plotter.addLine(edge.getFirstNode().getKey().getValue().getLatitude(), edge.getFirstNode().getKey().getValue().getLongitude(),
-                    edge.getSecondNode().getKey().getValue().getLatitude(), edge.getSecondNode().getKey().getValue().getLongitude());
+            pointPlotter.addLine(edge.getFirstNode().getKey().getValue().getLatitude(), edge.getFirstNode().getKey().getValue().getLongitude(),
+                    edge.getSecondNode().getKey().getValue().getLatitude(), edge.getSecondNode().getKey().getValue().getLongitude(), Color.BLUE);
         }
+    }
+
+
+    public static void plotEdges(java.util.List<Edge<Node<String, LatLongId>, Double>> edgeList) {
+        //java.util.List<Edge<Node<String, LatLongId>, Double>> edgeList =
+        if (pointPlotter == null) {
+            pointPlotter = new PointPlotter();
+            pointPlotter.setVisible(true);
+        }
+
+        for (Edge<Node<String, LatLongId>, Double> edge : edgeList) {
+            pointPlotter.addLine(edge.getFirstNode().getKey().getValue().getLatitude(), edge.getFirstNode().getKey().getValue().getLongitude(),
+                    edge.getSecondNode().getKey().getValue().getLatitude(), edge.getSecondNode().getKey().getValue().getLongitude(), Color.GREEN);
+        }
+    }
+
+    public static void initializePointPlotter() {
+        pointPlotter = new PointPlotter();
+        pointPlotter.setVisible(true);
     }
 }

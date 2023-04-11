@@ -35,7 +35,7 @@ public class GraphReader {
                     String key = String.valueOf(node.getKey().getValue().getLatitude()) +
                             String.valueOf(node.getKey().getValue().getLongitude());
                     if (!set.contains(key)) {
-                        System.out.println("Duplicate not found");
+                        //System.out.println("Duplicate not found");
                         graph.addNode(node);
                     }
                     set.add(key);
