@@ -1,14 +1,12 @@
 package info6205.Graph;
 
 
-import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.LatLongId;
-import info6205.Graph.Utils.IndexMinPQ;
-import info6205.Graph.Utils.PointPlotter;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import info6205.Graph.Utils.IndexMinPQ;
+
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>>
         extends EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight> {
@@ -188,7 +186,29 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
             System.out.println("error while creating MST from Prim's e" + e);
             throw e;
         }
+    }
 
+
+    public void deleteEdge(Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge) {
+        try {
+
+            Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edgeToBeRemoved =
+                    edges.containsKey(edge) ? edge : edge.createReverseEdge();
+
+            if (edges.get(edgeToBeRemoved) == 1) {
+                this.edges.remove(edgeToBeRemoved);
+            } else {
+                this.edges.put(edge, edges.get(edgeToBeRemoved) - 1);
+            }
+
+            neighbourMap.get(edgeToBeRemoved.getFirstNode().getKey()).remove(edgeToBeRemoved);
+            Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edgeReverse = edgeToBeRemoved.createReverseEdge();
+            neighbourMap.get(edgeReverse.getFirstNode().getKey()).remove(edgeReverse);
+
+        } catch (Exception e) {
+            System.out.println("error while deleting edge" + Arrays.stream(e.getStackTrace()).map(p -> p.toString()).collect(Collectors.joining(", ")));
+            throw e;
+        }
 
     }
 
