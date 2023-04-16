@@ -12,7 +12,7 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
 
     private Map<Pair<Node<NodeValue, NodeKeyValue>, Node<NodeValue, NodeKeyValue>>, EdgeWeight> edgeWeights;
 
-    private final int equilibriumCountForTemp = 20;
+    private final int equilibriumCountForTemp = 10;
 
 
     public SimulatedAnnealing(Map<Pair<Node<NodeValue, NodeKeyValue>, Node<NodeValue, NodeKeyValue>>, EdgeWeight> edgeWeights) {
@@ -22,22 +22,23 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
 
     public List<Node<NodeValue, NodeKeyValue>>
     runSimulatedAnnealingTwo(List<Node<NodeValue, NodeKeyValue>> order, Double graphWeight, long temp, double coolingRate,
-                             long maxIteration) {
+                             long maxIteration, int equilibriumCountForTemp, int equilibriumIncrease) {
         try {
-            Node<NodeValue, NodeKeyValue>[] orderArray = order.toArray((Node<NodeValue, NodeKeyValue>[]) new Node[order.size()]);
+            //Node<NodeValue, NodeKeyValue>[] orderArray = order.toArray((Node<NodeValue, NodeKeyValue>[]) new Node[order.size()]);
             Random random = new Random();
             //double temp = 1;
             //double coolingRate = 0.1;
             boolean twoOptNew = true;
             double min = Double.MAX_VALUE;
             int graphV = order.size();
-            int equilibriumCountForTemp = 20;
+            int minConstCount = 0;
+            //int equilibriumCountForTemp = 25;
             int iteration = 0;
-            while (temp > 1 || iteration < maxIteration) {
+            while (temp > 0 || iteration < maxIteration) {
                 iteration = iteration + 1;
                 int tempEquilibriumCount = 0;
 
-                //while (tempEquilibriumCount != equilibriumCountForTemp) {
+                while (tempEquilibriumCount != equilibriumCountForTemp) {
 
                     int indexOfNodeOne = random.nextInt(1, graphV - 1);
                     int indexOfNodeTwo = indexOfNodeOne;
@@ -56,69 +57,26 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
                     } else {
                         if (newGraphWeight < min) {
                             min = newGraphWeight;
+                            minConstCount = 0;
                         }
                         //tempEquilibriumCount = 0;
                         graphWeight = newGraphWeight;
                     }
+                    minConstCount++;
                     tempEquilibriumCount++;
-                    System.out.println("New Graph Weight : " + iteration + "graph weight");
-                //}
+                    //System.out.println("New Graph Weight : " + iteration + "graph weight");
+                }
                 temp *= 1 - coolingRate;
-                //System.out.println("min : " + newGraphWeight);
+                equilibriumCountForTemp += equilibriumIncrease;
+                //System.out.println("min : " + min);
+                if (minConstCount > order.size() * order.size() && temp == 0) {
+                    //temp += 5;
+                    break;
+                }
+
             }
             System.out.println("hello min graph weight = " + iteration);
             return order;
-        } catch (Exception e) {
-            System.out.println("Error while running simulated Annealing by order : " + e);
-            throw e;
-        }
-    }
-
-    public List<Node<NodeValue, NodeKeyValue>>
-    runSimulatedAnnealing(List<Node<NodeValue, NodeKeyValue>> order, Double graphWeight) {
-        try {
-            Node<NodeValue, NodeKeyValue>[] orderArray = order.toArray((Node<NodeValue, NodeKeyValue>[]) new Node[order.size()]);
-            Random random = new Random();
-            double temp = 100000;
-            double coolingRate = 0.005;
-            double min = Double.MAX_VALUE;
-            int graphV = order.size();
-
-            while (temp > 1) {
-                int tempEquilibriumCount = 0;
-
-                //while (tempEquilibriumCount != order.size() * (order.size() - 1)) {
-
-                    int indexOfNodeOne = random.nextInt(1, graphV - 1);
-
-                    int indexOfNodeTwo = indexOfNodeOne;
-                    while (indexOfNodeOne == indexOfNodeTwo || Math.absExact(indexOfNodeTwo - indexOfNodeOne) < 2) {
-
-                        indexOfNodeTwo = random.nextInt(indexOfNodeOne + 1, graphV - 1);
-                    }
-                    Double newGraphWeight = null;
-
-                    newGraphWeight = twoOpt(orderArray, indexOfNodeOne,
-                                indexOfNodeTwo, temp, graphWeight);
-
-
-                    if (newGraphWeight == null) {
-                        //tempEquilibriumCount++;
-                    } else {
-                        if (newGraphWeight < min) {
-                            min = newGraphWeight;
-                        }
-                        //tempEquilibriumCount = 0;
-                        graphWeight = newGraphWeight;
-                    }
-                    tempEquilibriumCount++;
-                    //System.out.println("New Graph Weight : " + newGraphWeight);
-                //}
-                temp *= 1 - coolingRate;
-                //System.out.println("min : " + newGraphWeight);
-            }
-            System.out.println("hello min graph weight = " + min);
-            return new ArrayList<>(Arrays.asList(orderArray));
         } catch (Exception e) {
             System.out.println("Error while running simulated Annealing by order : " + e);
             throw e;
@@ -131,8 +89,8 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
         Random random = new Random();
         int maxEdgeSize = graph.getEdges().size();
         Double graphWeight = calculateGraphWeight(graph);
-        double temp = 1000000;
-        double coolingRate = 0.00005;
+        double temp = 10000;
+        double coolingRate = 0.0001;
         double min = Double.MAX_VALUE;
 
         while (temp > 1) {
@@ -281,81 +239,6 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
 
     }
 
-
-    private Double twoOpt(Node<NodeValue, NodeKeyValue>[] order, int indexOne, int indexTwo,
-                          double temperature, Double currentWeightOfGraph) {
-        try {
-            double nodeOneEdgesLost = 0;
-            double nodeTwoEdgesLost = 0;
-            double nodeOneEdgesGain = 0;
-            double nodeTwoEdgesGain = 0;
-
-            int nodeOneLeft = -1;
-            int nodeOneRight = -1;
-            int nodeTwoLeft = -1;
-            int nodeTwoRight = -1;
-
-            if (indexOne == 0 || indexOne == order.length - 1) {
-                if (indexOne == 0) {
-                    nodeOneLeft = order.length - 1;
-                    nodeOneRight = indexOne + 1;
-                } else {
-                    nodeOneLeft = indexOne - 1;
-                    nodeOneRight = 0;
-                }
-            } else {
-                nodeOneLeft = indexOne - 1;
-                nodeOneRight = indexOne + 1;
-            }
-
-            if (indexTwo == 0 || indexTwo == order.length - 1) {
-                if (indexTwo == 0) {
-                    nodeTwoLeft = order.length - 1;
-                    nodeTwoRight = indexTwo + 1;
-                } else {
-                    nodeTwoLeft = indexTwo - 1;
-                    nodeTwoRight = 0;
-                }
-            } else {
-                nodeTwoLeft = indexTwo - 1;
-                nodeTwoRight = indexTwo + 1;
-            }
-
-            nodeOneEdgesLost = (Double) edgeWeights.get(new Pair<>(order[indexOne], order[nodeOneRight]))
-            + (Double) edgeWeights.get(new Pair<>(order[indexOne], order[nodeOneLeft]));
-
-            nodeTwoEdgesLost = (Double) edgeWeights.get(new Pair<>(order[indexTwo], order[nodeTwoRight]))
-                    + (Double) edgeWeights.get(new Pair<>(order[indexTwo], order[nodeTwoLeft]));
-
-
-            nodeOneEdgesGain = (Double) edgeWeights.get(new Pair<>(order[indexOne], order[nodeTwoRight]))
-                    + (Double) edgeWeights.get(new Pair<>(order[indexOne], order[nodeTwoLeft]));
-
-            nodeTwoEdgesGain = (Double) edgeWeights.get(new Pair<>(order[indexTwo], order[nodeOneRight]))
-                    + (Double) edgeWeights.get(new Pair<>(order[indexTwo], order[nodeOneLeft]));
-
-
-            Double newWeight = currentWeightOfGraph + nodeTwoEdgesGain + nodeOneEdgesGain - nodeOneEdgesLost - nodeTwoEdgesLost;
-
-            Random random = new Random();
-
-            //System.out.println("Random value:" + Math.exp((currentWeightOfGraph - edgeMatchingWeight) / temperature));
-
-            if (newWeight < currentWeightOfGraph) {// || Math.exp((currentWeightOfGraph - newWeight) / temperature) > random.nextDouble()) {
-                Node<NodeValue, NodeKeyValue> nodeOne = order[indexOne];
-                order[indexOne] = order[indexTwo];
-                order[indexTwo] = nodeOne;
-                System.out.println("finally here with new weight: " + newWeight);
-                return newWeight;
-            }
-
-            return null;
-        } catch (Exception e) {
-            System.out.println("Exception in new Two opt + e" + e);
-            throw e;
-        }
-    }
-
     private Double twoOptNew(List<Node<NodeValue, NodeKeyValue>> order, int smallerIndex, int largerIndex,
                           double temperature, Double currentWeightOfGraph) {
         try {
@@ -386,9 +269,9 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
 
             //System.out.println("Random value:" + Math.exp((currentWeightOfGraph - edgeMatchingWeight) / temperature));
 
-            if (newWeight < currentWeightOfGraph || Math.exp((currentWeightOfGraph - newWeight) / temperature) > random.nextDouble()) {
-
-                List<Node<NodeValue, NodeKeyValue>> startToSmallerIndex = createNewSubList(order, 0, smallerIndex, false);
+            if (newWeight < currentWeightOfGraph) {// || Math.exp((currentWeightOfGraph - newWeight) / temperature) > random.nextDouble()) {
+                Collections.reverse(order.subList(smallerIndex + 1, largerIndex + 1));
+                /*List<Node<NodeValue, NodeKeyValue>> startToSmallerIndex = createNewSubList(order, 0, smallerIndex, false);
                 List<Node<NodeValue, NodeKeyValue>> plusOneSmallerToLargerIndexReverse = createNewSubList(order, smallerIndex + 1, largerIndex, true);
                 List<Node<NodeValue, NodeKeyValue>> plusOneLargerIndexToEnd = createNewSubList(order, largerIndex + 1, order.size() - 1, false);
                 List<Node<NodeValue, NodeKeyValue>> ansList = new ArrayList<>();
@@ -396,6 +279,8 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
                 order.addAll(startToSmallerIndex);
                 order.addAll(plusOneSmallerToLargerIndexReverse);
                 order.addAll(plusOneLargerIndexToEnd);
+
+                 */
                 //System.out.println("finally here with new weight: " + newWeight);
                 return newWeight;
             }
