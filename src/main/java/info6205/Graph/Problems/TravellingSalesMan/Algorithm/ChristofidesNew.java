@@ -60,7 +60,7 @@ public class ChristofidesNew<NodeValue, NodeKeyValue, EdgeWeight extends Compara
     }
 
     private List<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>> createEdgesForOddNode(List<Node<NodeValue, NodeKeyValue>> listOfOddNode) {
-        Set<Key<NodeKeyValue>> setOfNodesDone = new HashSet<>();
+        Set<KeyLatLongId<NodeKeyValue>> setOfNodesDone = new HashSet<>();
         for (int i = 0; i < listOfOddNode.size() - 1; i++) {
             int minIndex = -1;
             Double minEdgeWeight = Double.MIN_VALUE;

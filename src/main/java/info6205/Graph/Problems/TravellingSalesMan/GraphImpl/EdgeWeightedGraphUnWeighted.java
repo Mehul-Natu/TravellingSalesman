@@ -12,7 +12,7 @@ public class EdgeWeightedGraphUnWeighted {//implements UnWeightedAdjacencyListGr
     private final List<Node<String, LatLongId>> nodes;
     private final Map<Key<LatLongId>, Node<String, LatLongId>> nodesSet;
 
-    //private final Map<Key<LatLongId>, Map<Key<LatLongId>>> edge;
+    //private final Map<KeyLatLongId<LatLongId>, Map<KeyLatLongId<LatLongId>>> edge;
 
 
     public EdgeWeightedGraphUnWeighted(List<Node<String, LatLongId>> nodes, Map<Key<LatLongId>, Node<String, LatLongId>> nodesSet) {

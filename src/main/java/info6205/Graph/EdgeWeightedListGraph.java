@@ -61,6 +61,15 @@ public abstract class EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
     public abstract Map<Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight>, Integer> getEdges();
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof EdgeWeightedListGraph<?, ?, ?> that)) return false;
+        return getNodes().equals(that.getNodes()) && neighbourMap.equals(that.neighbourMap) && getEdges().equals(that.getEdges());
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(getNodes(), neighbourMap, getEdges());
+    }
 }

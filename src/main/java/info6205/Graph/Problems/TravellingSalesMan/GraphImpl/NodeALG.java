@@ -41,7 +41,7 @@ public class NodeALG implements Node<String, LatLongId> {
     }
 
     @Override
-    public Node<String, LatLongId> getNeighbour(final Key<LatLongId> key) {
+    public Node<String, LatLongId> getNeighbour(final KeyLatLongId<LatLongId> key) {
         return neighbours.stream().filter(p -> key.equals(p.getKey())).findFirst().orElse(null);
     }
 

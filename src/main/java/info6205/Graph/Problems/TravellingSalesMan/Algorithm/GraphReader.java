@@ -2,7 +2,7 @@ package info6205.Graph.Problems.TravellingSalesMan.Algorithm;
 
 import info6205.Graph.EdgeCreator;
 import info6205.Graph.Node;
-import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.Key;
+import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.KeyLatLongId;
 import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.LatLongId;
 import info6205.Graph.Problems.TravellingSalesMan.GraphImpl.NodeALG;
 import info6205.Graph.UndirectedEdgeWeighedListGraph;
@@ -56,7 +56,7 @@ public class GraphReader {
         String nodeData = br.readLine();
         if (nodeData != null) {
             String[] idLongLat = nodeData.split(",");
-            return new NodeALG(new Key(
+            return new NodeALG(new KeyLatLongId(
                     new LatLongId(Double.valueOf(idLongLat[2]), Double.valueOf(idLongLat[1]), idLongLat[0])),
                     idLongLat[0]);
 

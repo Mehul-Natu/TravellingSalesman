@@ -11,7 +11,7 @@ public interface Node<T, G> {
 
     //List<Node<T, G>> getNeighbours();
 
-    //Node<T, G> getNeighbour(Key<G> key);
+    //Node<T, G> getNeighbour(KeyLatLongId<G> key);
 
     //boolean addNeighbour(Node<T, G> neighbour);
 }

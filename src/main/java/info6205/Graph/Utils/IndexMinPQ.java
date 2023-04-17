@@ -192,7 +192,7 @@ public class IndexMinPQ<Key extends Comparable<Key>> implements Iterable<Integer
      * @param  i the index of the key to change
      * @param  key change the key associated with index {@code i} to this key
      * @throws IllegalArgumentException unless {@code 0 <= i < maxN}
-     * @deprecated Replaced by {@code changeKey(int, Key)}.
+     * @deprecated Replaced by {@code changeKey(int, KeyLatLongId)}.
      */
     @Deprecated
     public void change(int i, Key key) {

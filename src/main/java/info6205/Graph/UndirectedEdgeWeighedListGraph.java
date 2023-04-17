@@ -229,4 +229,17 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
             return this.edgeWeight.compareTo((EdgeWeight) o.edgeWeight);
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof UndirectedEdgeWeighedListGraph<?, ?, ?> that)) return false;
+        if (!super.equals(o)) return false;
+        return ((UndirectedEdgeWeighedListGraph<?, ?, ?>) o).edgeCreator != null;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), edgeCreator);
+    }
 }
