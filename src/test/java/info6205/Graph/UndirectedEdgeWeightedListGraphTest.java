@@ -66,10 +66,11 @@ public class UndirectedEdgeWeightedListGraphTest {
         Node<String, LatLongId> node1 = createNode(1.0, 1.0, "1");
         Node<String, LatLongId> node2 = createNode(2.0, 2.0, "2");
         Node<String, LatLongId> node3 = createNode(3.0, 3.0, "3");
-        Node<String, LatLongId> node4 = createNode(3.0, 3.0, "3");
+        Node<String, LatLongId> node4 = createNode(4.0, 4.0, "4");
         graph.addNode(node1);
         graph.addNode(node2);
         graph.addNode(node3);
+        graph.addNode(node4);
         graph.addEdge(node1, node2, 1D);
         graph.addEdge(node1, node3, 2D);
         graph.addEdge(node2, node3, 3D);

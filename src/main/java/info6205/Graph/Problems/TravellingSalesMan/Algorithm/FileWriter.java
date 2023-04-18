@@ -57,6 +57,7 @@ public class FileWriter<NodeValue, NodeKeyValue> {
             System.out.println("\naverage:"+averageTsp+", min:" + minTsp + " max:" + maxTsp + ", time taken:" + timeTaken);
             System.out.println("coolingRate:"+coolingRate+", equilibriumCountForTemp:" + equilibriumCountForTemp
                     + " equilibriumIncrease:" + equilibriumIncrease);
+            bw.flush();
         } catch (Exception e) {
             System.out.println("Exception while writing for values 2Opt: " + e);
         }

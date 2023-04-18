@@ -92,18 +92,18 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
             int minConstCount = 0;
             //int equilibriumCountForTemp = 25;
             int iteration = 0;
-            while (temp > 0) {
+            while (temp > 0 && iteration < maxIteration) {
                 iteration = iteration + 1;
                 int tempEquilibriumCount = 0;
 
-                //while (tempEquilibriumCount != equilibriumCountForTemp) {
+                while (tempEquilibriumCount != equilibriumCountForTemp) {
 
                     int segmentIndex = random.nextInt(0, graphV);
 
                     int[] segment = this.segments.get(segmentIndex);
                     Double delta = null;
 
-                    delta = threeOpt(order, segment[0],
+                    delta = threeOptPure(order, segment[0],
                             segment[1], segment[2], temp);
 
                     if (delta == 0D) {
@@ -119,10 +119,10 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                     minConstCount++;
                     tempEquilibriumCount++;
                     //System.out.println("New Graph Weight : " + iteration + "graph weight");
-                //}
+                }
                 temp *= 1 - coolingRate;
                 equilibriumCountForTemp += equilibriumIncrease;
-                System.out.println("Three Opt min : " + min);
+                System.out.println("Three Opt min : " + min + ", iteration: " + iteration);
                 if (minConstCount > order.size() * order.size() && temp == 0) {
                     //temp += 5;
                     //break;
@@ -201,16 +201,18 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
             Double d4 = (Double) edgeWeights.get(new Pair<>(nodeF, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeD)) +
                     (Double) edgeWeights.get(new Pair<>(nodeE, nodeA));
             Random random = new Random();
-            if (d0 > d1 || Math.exp((d0 - d1) / temperature) > random.nextDouble()) {
+
+            if (d0 > d1) {
                 Collections.reverse(order.subList(firstIndex, secondIndex));
                 return -d0 + d1;
-            } else if (d0 > d2 || Math.exp((d0 - d2) / temperature) > random.nextDouble()) {
+            } else if (d0 > d2) {
                 Collections.reverse(order.subList(secondIndex, thirdIndex));
                 return -d0 + d2;
-            } else if (d0 > d4 || Math.exp((d0 - d4) / temperature) > random.nextDouble()) {
+            } else if (d0 > d4) {
                 Collections.reverse(order.subList(firstIndex, thirdIndex));
                 return -d0 + d4;
-            } else if (d0 > d3 || Math.exp((d0 - d3) / temperature) > random.nextDouble()) {
+            } else if (d0 > d3) {
+
                 //Collections.reverse(order.subList(firstIndex, secondIndex));
                 List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(secondIndex, thirdIndex));
                 tmp.addAll(order.subList(firstIndex, secondIndex));
@@ -220,6 +222,134 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                 return -d0 + d3;
             }
 
+            if (Math.exp((d0 - d1) / temperature) > random.nextDouble()) {
+                Collections.reverse(order.subList(firstIndex, secondIndex));
+                return -d0 + d1;
+            } else if (Math.exp((d0 - d2) / temperature) > random.nextDouble()) {
+                Collections.reverse(order.subList(secondIndex, thirdIndex));
+                return -d0 + d2;
+            } else if (Math.exp((d0 - d4) / temperature) > random.nextDouble()) {
+                Collections.reverse(order.subList(firstIndex, thirdIndex));
+                return -d0 + d4;
+            } else if (Math.exp((d0 - d3) / temperature) > random.nextDouble()) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(firstIndex, secondIndex));
+                // Replace the sublist from i to k (exclusive) with the concatenated sublist
+                order.subList(firstIndex, thirdIndex).clear();
+                order.addAll(firstIndex, tmp);
+                return -d0 + d3;
+            }
+
+            return 0D;
+
+        } catch (Exception e) {
+            System.out.println("Exception While Performing ThreeOpt e: " + e);
+            throw e;
+        }
+    }
+
+    public Double threeOptPure(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex, Double temperature) {
+        try {
+            Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeB = order.get(firstIndex);
+            Node<NodeValue, NodeKeyValue> nodeC = order.get(secondIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeD = order.get(secondIndex);
+            Node<NodeValue, NodeKeyValue> nodeE = order.get(thirdIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeF = order.get(thirdIndex % order.size());
+
+            Double d0 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeD)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeE, nodeF));
+
+            Double d3 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeD)) + (Double) edgeWeights.get(new Pair<>(nodeE, nodeB)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeC, nodeF));
+
+            Double d4 = (Double) edgeWeights.get(new Pair<>(nodeD, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeF)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeE, nodeA));
+
+            if (d0 > d3) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(firstIndex, secondIndex));
+                order.subList(firstIndex, thirdIndex).clear();
+                order.addAll(firstIndex, tmp);
+                return -d0 + d3;
+
+            } else if (d0 > d4) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(firstIndex, secondIndex));
+                tmp.addAll(order.subList(thirdIndex, order.size()));
+                tmp.addAll(order.subList(0, firstIndex));
+                Collections.reverse(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(secondIndex, thirdIndex));
+                order.clear();
+                order.addAll(tmp);
+                return -d0 + d4;
+            }
+            /*
+
+            Random random = new Random();
+            if (Math.exp((d0 - d4) / temperature) > random.nextDouble()) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(firstIndex, secondIndex));
+                tmp.addAll(order.subList(thirdIndex, order.size()));
+                tmp.addAll(order.subList(0, firstIndex));
+                Collections.reverse(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(secondIndex, thirdIndex));
+                order.clear();
+                order.addAll(tmp);
+                return -d0 + d4;
+            } else if (Math.exp((d0 - d3) / temperature) > random.nextDouble()) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(firstIndex, secondIndex));
+                // Replace the sublist from i to k (exclusive) with the concatenated sublist
+                order.subList(firstIndex, thirdIndex).clear();
+                order.addAll(firstIndex, tmp);
+                return -d0 + d3;
+            }
+
+             */
+
+            return 0D;
+
+        } catch (Exception e) {
+            System.out.println("Exception While Performing ThreeOpt e: " + e);
+            throw e;
+        }
+    }
+
+
+    public Double threeOptPure(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex) {
+        try {
+            Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeB = order.get(firstIndex);
+            Node<NodeValue, NodeKeyValue> nodeC = order.get(secondIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeD = order.get(secondIndex);
+            Node<NodeValue, NodeKeyValue> nodeE = order.get(thirdIndex - 1);
+            Node<NodeValue, NodeKeyValue> nodeF = order.get(thirdIndex % order.size());
+
+            Double d0 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeD)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeE, nodeF));
+
+            Double d3 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeD)) + (Double) edgeWeights.get(new Pair<>(nodeE, nodeB)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeC, nodeF));
+
+            Double d4 = (Double) edgeWeights.get(new Pair<>(nodeD, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeF)) +
+                    (Double) edgeWeights.get(new Pair<>(nodeE, nodeA));
+
+            if (d0 > d3) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(firstIndex, secondIndex));
+                order.subList(firstIndex, thirdIndex).clear();
+                order.addAll(firstIndex, tmp);
+                return -d0 + d3;
+
+            } else if (d0 > d4) {
+                List<Node<NodeValue, NodeKeyValue>> tmp = new ArrayList<>(order.subList(firstIndex, secondIndex));
+                tmp.addAll(order.subList(thirdIndex, order.size()));
+                tmp.addAll(order.subList(0, firstIndex));
+                Collections.reverse(order.subList(secondIndex, thirdIndex));
+                tmp.addAll(order.subList(secondIndex, thirdIndex));
+                order.clear();
+                order.addAll(tmp);
+                return -d0 + d4;
+            }
             return 0D;
 
         } catch (Exception e) {
@@ -240,12 +370,15 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
 
             Double d0 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeD)) +
                     (Double) edgeWeights.get(new Pair<>(nodeE, nodeF));
+
             Double d1 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeC)) + (Double) edgeWeights.get(new Pair<>(nodeB, nodeD)) +
                     (Double) edgeWeights.get(new Pair<>(nodeE, nodeF));
             Double d2 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeE)) +
                     (Double) edgeWeights.get(new Pair<>(nodeD, nodeF));
+
             Double d3 = (Double) edgeWeights.get(new Pair<>(nodeA, nodeD)) + (Double) edgeWeights.get(new Pair<>(nodeE, nodeB)) +
                     (Double) edgeWeights.get(new Pair<>(nodeC, nodeF));
+
             Double d4 = (Double) edgeWeights.get(new Pair<>(nodeF, nodeB)) + (Double) edgeWeights.get(new Pair<>(nodeC, nodeD)) +
                     (Double) edgeWeights.get(new Pair<>(nodeE, nodeA));
 
@@ -275,4 +408,5 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
             throw e;
         }
     }
+
 }

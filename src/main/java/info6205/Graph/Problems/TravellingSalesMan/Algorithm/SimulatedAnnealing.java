@@ -21,6 +21,7 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
 
 
 
+
     public SimulatedAnnealing(Map<Pair<Node<NodeValue, NodeKeyValue>, Node<NodeValue, NodeKeyValue>>, EdgeWeight> edgeWeights) throws FileNotFoundException {
         this.edgeWeights = edgeWeights;
     }
@@ -138,8 +139,10 @@ public class SimulatedAnnealing<NodeValue, NodeKeyValue, EdgeWeight extends Comp
                     //System.out.println("New Graph Weight : " + iteration + "graph weight");
                 }
                 temp *= 1 - coolingRate;
-                equilibriumCountForTemp += equilibriumIncrease;
-                //System.out.println("temp : " + min);
+                if (equilibriumCountForTemp < 5000) {
+                    equilibriumCountForTemp += equilibriumIncrease;
+                }
+                //System.out.println("temp : " + min + " Equilibrium count" + equilibriumCountForTemp);
                 if (minConstCount > order.size() * order.size() && temp == 0) {
                     //temp += 5;
                     break;
