@@ -129,10 +129,10 @@ public class TwoOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeW
     /**
     *
     * Runs the simulated annealing algorithm to find the minimum weight Hamiltonian path in the given graph.
-     * @param order a list of nodes representing the graph
-     * @param graphWeight the weight of the initial Hamiltonian path
+     * @param order a list of nodes representing the TSP path
+     * @param graphWeight the weight of the initial TSP path
      * @param temp the starting temperature
-     * @param coolingRate the cooling rate
+     * @param coolingRate the cooling rate by which the temperature is dropped
      * @param maxIteration the maximum number of iterations to run
      * @param equilibriumCountForTemp the number of times to iterate at each temperature before cooling
      * @param equilibriumIncrease the amount to increase the equilibrium count for each temperature

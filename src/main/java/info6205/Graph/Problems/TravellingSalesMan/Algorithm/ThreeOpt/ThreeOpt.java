@@ -9,19 +9,12 @@ import java.util.concurrent.CompletableFuture;
 
 /**
 
- The ThreeOpt class is used to implement the 3-opt algorithm for the Travelling Salesman Problem (TSP).
-
- The 3-opt algorithm is a local search algorithm that is used to find an approximate solution for TSP.
-
- This algorithm takes a set of nodes as input and iteratively optimizes the tour using three different kinds of exchanges
-
- between three edges in the tour until no further improvement can be made.
-
- @param <NodeValue> the node value type
-
- @param <NodeKeyValue> the node key value type
-
- @param <EdgeWeight> the edge weight type which extends Comparable
+ * The ThreeOpt class is used to implement the 3-opt algorithm..
+ * This algorithm takes a set of nodes as input and iteratively optimizes the tour using three different kinds of exchanges
+ * between three edges in the tour until no further improvement can be made.
+ * @param <NodeValue> the node value type
+ * @param <NodeKeyValue> the node key value type
+ * @param <EdgeWeight> the edge weight type which extends Comparable
  */
 public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>> {
 
@@ -30,13 +23,30 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
     List<int[]> segments;
 
 
-
+    /**
+     * Takes in Edge weights which is basically all the edges of a complete graph
+     * @param edgeWeights all the edges of a complete graph
+     * @param size number of nodes in same
+     */
     public ThreeOpt(Map<Pair<Node<NodeValue, NodeKeyValue>, Node<NodeValue, NodeKeyValue>>, EdgeWeight> edgeWeights, int size) {
         this.edgeWeights = edgeWeights;
         segments = allSegments(size);
     }
 
 
+    /**
+     *
+     * @param parallelism number of parallel threads
+     * @param tour TSP Tour, list of nodes
+     * @param graphWeight current weight of the TSP tour
+     * @param temp The initial temperature for the simulated annealing algorithm.
+     * @param coolingRate The cooling rate for the simulated annealing algorithm.
+     * @param maxIteration The maximum number of iterations for the simulated annealing algorithm.
+     * @param equilibriumCountForTemp The number of iterations to wait for equilibrium before reducing the temperature.
+     * @param equilibriumIncrease The increase factor for the equilibrium count.
+     * @param returnMinimum Whether to return only the minimum tour found by the algorithm and replace current tour with minimum tour
+     * @param benchMarking Whether to enable benchmarking mode for the algorithm.
+     */
     public List<Pair<List<Node<NodeValue, NodeKeyValue>>, Double>>
     parallelizeSimulatedAnnealingThreeOpt(int parallelism, List<Node<NodeValue, NodeKeyValue>> tour,
                                         Double graphWeight, long temp, double coolingRate,
@@ -78,6 +88,17 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
     }
 
 
+    /**
+     * Helper for Parallel simulated annealing
+     * @param tour TSP Tour, list of nodes
+     * @param graphWeight current weight of the TSP tour
+     * @param temp The initial temperature for the simulated annealing algorithm.
+     * @param coolingRate The cooling rate for the simulated annealing algorithm.
+     * @param maxIteration The maximum number of iterations for the simulated annealing algorithm.
+     * @param equilibriumCountForTemp The number of iterations to wait for equilibrium before reducing the temperature.
+     * @param equilibriumIncrease The increase factor for the equilibrium count.
+     * @return
+     */
     public CompletableFuture<Pair<List<Node<NodeValue, NodeKeyValue>>, Double>> parallelSimulatedAnnealingHelper(List<Node<NodeValue, NodeKeyValue>> tour,
                                                                                                                  Double graphWeight,
                                                                                                                  long temp, double coolingRate,
@@ -98,7 +119,19 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                 equilibriumCountForTemp, equilibriumIncrease));
     }
 
-
+    /**
+     *
+     * Runs the simulated annealing algorithm to find the minimum weight Hamiltonian path in the given graph.
+     * @param order a list of nodes representing the graph
+     * @param graphWeight the weight of the initial TSP path
+     * @param temp the starting temperature
+     * @param coolingRate the cooling rate by which the temp is decreased
+     * @param maxIteration the maximum number of iterations to run
+     * @param equilibriumCountForTemp the number of times to iterate at each temperature before cooling
+     * @param equilibriumIncrease the amount to increase the equilibrium count for each temperature
+     * @return the minimum weight Hamiltonian path found by the algorithm
+     * @throws Exception if an error occurs while running the algorithm
+     */
     public Double
     runSimulatedAnnealing(List<Node<NodeValue, NodeKeyValue>> order, Double graphWeight, double temp, double coolingRate,
                              long maxIteration, int equilibriumCountForTemp, int equilibriumIncrease) {
@@ -157,7 +190,14 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
     }
 
 
+    /**
 
+     * Performs the 3-opt algorithm to improve the given TSP tour order. it searches through every possible indices
+     * @param order a List of Nodes representing the TSP tour order
+     * @param tsp the total weight of the TSP tour
+     * @return the updated total weight of the TSP tour after performing 2-opt algorithm
+     * @throws Exception if any error occurs while performing 2-opt algorithm
+     */
     public Double performThreeOpt(List<Node<NodeValue, NodeKeyValue>> order, Double tsp) {
         try {
             long iteration = 0;
@@ -199,7 +239,17 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
         return segments;
     }
 
-
+    /**
+     * Applies the 3-opt heuristic algorithm to a given list of nodes with node indices 3 indices.
+     * Applies # opt which is present in the wiki with temperature
+     * @param order a List of Nodes representing the TSP tour order
+     * @param firstIndex the index of the first node
+     * @param secondIndex the index of the second node
+     * @param thirdIndex the total weight of the TSP tour before performing the 3-opt algorithm
+     * @param temperature the current temperature of the simulated annealing algorithm
+     * @return the change in weight of the TSP tour after performing 3-opt between the specified nodes
+     * @throws Exception if any error occurs while performing 3-opt algorithm
+     */
     public Double threeOpt(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex, Double temperature) {
         try {
             Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
@@ -267,6 +317,18 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
         }
     }
 
+
+    /**
+     * Applies the 3-opt heuristic algorithm to a given list of nodes with node indices 3 indices.
+     * applies True 3 opt with temperature
+     * @param order a List of Nodes representing the TSP tour order
+     * @param firstIndex the index of the first node
+     * @param secondIndex the index of the second node
+     * @param thirdIndex the total weight of the TSP tour before performing the 3-opt algorithm
+     * @param temperature the current temperature of the simulated annealing algorithm
+     * @return the change in weight of the TSP tour after performing 3-opt between the specified nodes
+     * @throws Exception if any error occurs while performing 3-opt algorithm
+     */
     public Double threeOptPure(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex, Double temperature) {
         try {
             Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
@@ -332,6 +394,16 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
     }
 
 
+    /**
+     * Applies the 3-opt heuristic algorithm to a given list of nodes with node indices 3 indices.
+     * applies True 3 opt with temperature
+     * @param order a List of Nodes representing the TSP tour order
+     * @param firstIndex the index of the first node
+     * @param secondIndex the index of the second node
+     * @param thirdIndex the total weight of the TSP tour before performing the 3-opt algorithm
+     * @return the change in weight of the TSP tour after performing 3-opt between the specified nodes
+     * @throws Exception if any error occurs while performing 3-opt algorithm
+     */
     public Double threeOptPure(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex) {
         try {
             Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
@@ -376,6 +448,16 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
     }
 
 
+    /**
+     * Applies the 3-opt heuristic algorithm to a given list of nodes with node indices 3 indices.
+     * applies 3 opt as given on wiki with temperature
+     * @param order a List of Nodes representing the TSP tour order
+     * @param firstIndex the index of the first node
+     * @param secondIndex the index of the second node
+     * @param thirdIndex the total weight of the TSP tour before performing the 3-opt algorithm
+     * @return the change in weight of the TSP tour after performing 3-opt between the specified nodes
+     * @throws Exception if any error occurs while performing 3-opt algorithm
+     */
     public Double threeOpt(List<Node<NodeValue, NodeKeyValue>> order, int firstIndex, int secondIndex, int thirdIndex) {
         try {
             Node<NodeValue, NodeKeyValue> nodeA = order.get(firstIndex - 1);
