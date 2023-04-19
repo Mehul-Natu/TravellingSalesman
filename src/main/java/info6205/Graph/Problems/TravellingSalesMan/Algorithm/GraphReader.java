@@ -85,8 +85,8 @@ public class GraphReader {
         if (nodeData != null) {
             String[] idLongLat = nodeData.split(",");
             return new NodeALG(new KeyLatLongId(
-                    new LatLongId(Double.valueOf(idLongLat[2]), Double.valueOf(idLongLat[1]), idLongLat[0])),
-                    idLongLat[0]);
+                    new LatLongId(Double.valueOf(idLongLat[2]), Double.valueOf(idLongLat[1]), idLongLat[0].substring(idLongLat[0].length() - 5))),
+                    idLongLat[0].substring(idLongLat[0].length() - 5));
 
         }
         return null;

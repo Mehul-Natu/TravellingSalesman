@@ -5,6 +5,7 @@ import info6205.Graph.Utils.Pair;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ForkJoinPool;
 
 
 /**
@@ -69,8 +70,8 @@ public class TwoOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeW
                                         long maxIteration, int equilibriumCountForTemp, int equilibriumIncrease,
                                         boolean returnMinimum, boolean benchMarking) {
         try {
-            if (parallelism > 14) {
-                parallelism = 14;
+            if (parallelism > ForkJoinPool.getCommonPoolParallelism()) {
+                parallelism = ForkJoinPool.getCommonPoolParallelism() - 2;
             }
 
             CompletableFuture<Pair<List<Node<NodeValue, NodeKeyValue>>, Double>>[] simulatedAnnealings = new CompletableFuture[parallelism];
