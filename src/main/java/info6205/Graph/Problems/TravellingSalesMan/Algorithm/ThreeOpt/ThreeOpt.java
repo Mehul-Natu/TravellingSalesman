@@ -6,6 +6,23 @@ import info6205.Graph.Utils.Pair;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
+
+/**
+
+ The ThreeOpt class is used to implement the 3-opt algorithm for the Travelling Salesman Problem (TSP).
+
+ The 3-opt algorithm is a local search algorithm that is used to find an approximate solution for TSP.
+
+ This algorithm takes a set of nodes as input and iteratively optimizes the tour using three different kinds of exchanges
+
+ between three edges in the tour until no further improvement can be made.
+
+ @param <NodeValue> the node value type
+
+ @param <NodeKeyValue> the node key value type
+
+ @param <EdgeWeight> the edge weight type which extends Comparable
+ */
 public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>> {
 
     Map<Pair<Node<NodeValue, NodeKeyValue>, Node<NodeValue, NodeKeyValue>>, EdgeWeight> edgeWeights;
@@ -48,14 +65,14 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                 }
                 tourValues.add(tourValue);
             }
-            System.out.println("Final 2Opts parallel min Tour value : " + minTourValue);
+            System.out.println("Final 3Opts parallel min Tour value : " + minTourValue);
             if (returnMinimum) {
                 tour.clear();
                 tour.addAll(minTour);
             }
             return returnMinimum ? Collections.singletonList(new Pair<>(minTour, minTourValue)) : tourValues;
         } catch (Exception e) {
-            System.out.println("Exception in Parallelized 2 opt sim : " + e);
+            System.out.println("Exception in Parallelized 3 opt sim : " + e);
             throw e;
         }
     }
@@ -98,7 +115,7 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
 
                 while (tempEquilibriumCount != equilibriumCountForTemp) {
 
-                    int segmentIndex = random.nextInt(0, graphV);
+                    int segmentIndex = random.nextInt(0, this.segments.size());
 
                     int[] segment = this.segments.get(segmentIndex);
                     Double delta = null;
@@ -121,7 +138,9 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                     //System.out.println("New Graph Weight : " + iteration + "graph weight");
                 }
                 temp *= 1 - coolingRate;
-                equilibriumCountForTemp += equilibriumIncrease;
+                if (equilibriumCountForTemp < 5000) {
+                    equilibriumCountForTemp += equilibriumIncrease;
+                }
                 System.out.println("Three Opt min : " + min + ", iteration: " + iteration);
                 if (minConstCount > order.size() * order.size() && temp == 0) {
                     //temp += 5;
@@ -148,11 +167,11 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                     for (int b = a + 2; b < order.size(); b++) {
                         for (int c = b + 2; c < order.size() + (a > 0 ? 1 : 0); c++) {
 
-                            Double temp = threeOpt(order, a, b, c);
+                            Double temp = threeOptPure(order, a, b, c);
                             delta += temp;
                             //System.out.println("\nDelta : " + temp + ", Tsp: " + tsp);
                             tsp += temp;
-                            //System.out.println("Tsp weight : " + tsp + ", iteration = " + iteration++);
+                            System.out.println("Tsp weight : " + tsp + ", iteration = " + iteration++);
                         }
                     }
                 }
@@ -283,7 +302,7 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                 order.addAll(tmp);
                 return -d0 + d4;
             }
-            /*
+
 
             Random random = new Random();
             if (Math.exp((d0 - d4) / temperature) > random.nextDouble()) {
@@ -303,8 +322,6 @@ public class ThreeOpt<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<Edg
                 order.addAll(firstIndex, tmp);
                 return -d0 + d3;
             }
-
-             */
 
             return 0D;
 

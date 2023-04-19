@@ -266,6 +266,140 @@ public class ChristofidesTest {
         assertTrue(set.containsAll(order));
     }
 
+    //generateTspTourFromOrderStarter
+
+    @Test
+    public void testGenerateTspTourFromOrderStarter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        UndirectedEdgeWeighedListGraph<String, LatLongId, Double> graph = new UndirectedEdgeWeighedListGraph<>(EdgeALG::new);
+        Node<String, LatLongId> node1 = createNode(1.0, 1.0, "1");
+        Node<String, LatLongId> node2 = createNode(2.0, 2.0, "2");
+        Node<String, LatLongId> node3 = createNode(3.0, 3.0, "3");
+        Node<String, LatLongId> node4 = createNode(4.0, 4.0, "4");
+        graph.addNode(node1);
+        graph.addNode(node2);
+        graph.addNode(node3);
+        graph.addNode(node4);
+        List<Node<String, LatLongId>> order = new ArrayList<>();
+        order.add(node1);
+        order.add(node2);
+        order.add(node3);
+        order.add(node4);
+
+        Map<Pair<Node<String, LatLongId>, Node<String, LatLongId>>, Double> edgeWeights = new HashMap<>();
+
+        edgeWeights.put(new Pair<>(node1, node2), 1D);
+        edgeWeights.put(new Pair<>(node2, node1), 1D);
+
+        edgeWeights.put(new Pair<>(node1, node4), 2D);
+        edgeWeights.put(new Pair<>(node4, node1), 2D);
+
+        edgeWeights.put(new Pair<>(node3, node4), 5D);
+        edgeWeights.put(new Pair<>(node4, node3), 5D);
+
+        edgeWeights.put(new Pair<>(node3, node2), 2D);
+        edgeWeights.put(new Pair<>(node2, node3), 2D);
+
+
+        Christofides<String, LatLongId, Double> christofides = new Christofides<>(graph, EdgeALG::new);
+        christofides.setEdgeWeights(edgeWeights);
+
+        Method createEulerianTourFromMinWeightMultiMatchGraphStarterTwoMethod = getMethodByName("generateTspTourFromOrderStarter");
+        createEulerianTourFromMinWeightMultiMatchGraphStarterTwoMethod
+                .invoke(christofides, order,graph);
+
+        assertEquals(2, graph.getNeighbours(node1.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node2.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node3.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node4.getKey()).size());
+        Set<Node<String, LatLongId>> set = new HashSet<>();
+        set.add(node2);
+        set.add(node4);
+        assertTrue(set.containsAll(graph.getNeighbours(node1.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node1);
+        set.add(node3);
+        assertTrue(set.containsAll(graph.getNeighbours(node2.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node2);
+        set.add(node4);
+        assertTrue(set.containsAll(graph.getNeighbours(node3.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node1);
+        set.add(node3);
+        assertTrue(set.containsAll(graph.getNeighbours(node4.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+    }
+
+    //generateTspTourFromEulerianTourStarter
+    @Test
+    public void testGenerateTspTourFromEulerianTourStarter() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        UndirectedEdgeWeighedListGraph<String, LatLongId, Double> graph = new UndirectedEdgeWeighedListGraph<>(EdgeALG::new);
+        Node<String, LatLongId> node1 = createNode(1.0, 1.0, "1");
+        Node<String, LatLongId> node2 = createNode(2.0, 2.0, "2");
+        Node<String, LatLongId> node3 = createNode(3.0, 3.0, "3");
+        Node<String, LatLongId> node4 = createNode(4.0, 4.0, "4");
+        graph.addNode(node1);
+        graph.addNode(node2);
+        graph.addNode(node3);
+        graph.addNode(node4);
+        List<Node<String, LatLongId>> order = new ArrayList<>();
+        order.add(node1);
+        order.add(node2);
+        order.add(node3);
+        order.add(node4);
+
+        Map<Pair<Node<String, LatLongId>, Node<String, LatLongId>>, Double> edgeWeights = new HashMap<>();
+
+        edgeWeights.put(new Pair<>(node1, node2), 1D);
+        edgeWeights.put(new Pair<>(node2, node1), 1D);
+
+        edgeWeights.put(new Pair<>(node1, node4), 2D);
+        edgeWeights.put(new Pair<>(node4, node1), 2D);
+
+        edgeWeights.put(new Pair<>(node3, node4), 5D);
+        edgeWeights.put(new Pair<>(node4, node3), 5D);
+
+        edgeWeights.put(new Pair<>(node3, node2), 2D);
+        edgeWeights.put(new Pair<>(node2, node3), 2D);
+
+
+        Christofides<String, LatLongId, Double> christofides = new Christofides<>(graph, EdgeALG::new);
+        christofides.setEdgeWeights(edgeWeights);
+
+        Method createEulerianTourFromMinWeightMultiMatchGraphStarterTwoMethod = getMethodByName("generateTspTourFromEulerianTourStarter");
+        createEulerianTourFromMinWeightMultiMatchGraphStarterTwoMethod
+                .invoke(christofides, order,graph);
+
+        assertEquals(2, graph.getNeighbours(node1.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node2.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node3.getKey()).size());
+        assertEquals(2, graph.getNeighbours(node4.getKey()).size());
+        Set<Node<String, LatLongId>> set = new HashSet<>();
+        set.add(node2);
+        set.add(node4);
+        assertTrue(set.containsAll(graph.getNeighbours(node1.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node1);
+        set.add(node3);
+        assertTrue(set.containsAll(graph.getNeighbours(node2.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node2);
+        set.add(node4);
+        assertTrue(set.containsAll(graph.getNeighbours(node3.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+        set.clear();
+        set.add(node1);
+        set.add(node3);
+        assertTrue(set.containsAll(graph.getNeighbours(node4.getKey()).stream().map(p -> p.getSecondNode()).collect(Collectors.toList())));
+
+    }
+
+
     private Method getMethodByName(String methodName) throws NoSuchMethodException {
         Method[] methods = Christofides.class.getDeclaredMethods();
         Method privateMethod = null;
@@ -277,33 +411,5 @@ public class ChristofidesTest {
             }
         }
         return privateMethod;
-    }
-
-
-    //getDistanceBetweenNodes Left
-    private Method getGetDistanceBetweenNodesMethod() throws NoSuchMethodException {
-        Method method = Christofides.class.getDeclaredMethod("getDistanceBetweenNodes");
-        method.setAccessible(true);
-        return method;
-    }
-    //getOddEdgesNodes
-    private Method getGetOddEdgesNodesMethod() throws NoSuchMethodException {
-        Method method = Christofides.class.getDeclaredMethod("getOddEdgesNodes");
-        method.setAccessible(true);
-        return method;
-    }
-
-    //createEdgesForOddNodeBruteForce
-    private Method getCreateEdgesForOddNodeBruteForceMethod() throws NoSuchMethodException {
-        Method method = Christofides.class.getDeclaredMethod("createEdgesForOddNodeBruteForce");
-        method.setAccessible(true);
-        return method;
-    }
-
-    //createMultiGraphFromMstAndEdges
-    private Method getCreateMultiGraphFromMstAndEdgesMethod() throws NoSuchMethodException {
-        Method method = Christofides.class.getDeclaredMethod("createMultiGraphFromMstAndEdges");
-        method.setAccessible(true);
-        return method;
     }
 }

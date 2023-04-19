@@ -18,7 +18,7 @@ public class FileWriter<NodeValue, NodeKeyValue> {
 
     public void start2optWriting() {
         try {
-            fis = new FileOutputStream("./csvOutput/" + "2Opt_bechmarking" + ".csv");
+            fis = new FileOutputStream("./csvOutput/" + "3Opt_bechmarking" + ".csv");
             isr = new OutputStreamWriter(fis);
             bw = new BufferedWriter(isr);
 

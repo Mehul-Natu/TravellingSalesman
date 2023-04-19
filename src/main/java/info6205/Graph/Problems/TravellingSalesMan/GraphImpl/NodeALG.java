@@ -3,81 +3,53 @@ package info6205.Graph.Problems.TravellingSalesMan.GraphImpl;
 import info6205.Graph.Node;
 import java.util.*;
 import info6205.Graph.Key;
-
-
-
+/**
+ * Represents a node in a graph.
+ * This class implements the Node interface, where the key is of type Key<LatLongId> and the value is of type String.
+ */
 
 public class NodeALG implements Node<String, LatLongId> {
 
     private final Key<LatLongId> key;
     private final String value;
-    //private final List<Node<String, LatLongId>> neighbours;
-    //private final Map<Node<String, LatLongId>, Double> neighbourWeight;
 
-
-
-
+    /**
+     * Creates a new NodeALG object with the given key and value.
+     *
+     * @param key   The key of the node, which is of type Key<LatLongId>.
+     * @param value The value of the node, which is of type String.
+     */
     public NodeALG(Key<LatLongId> key, String value) {
         this.key = key;
         this.value = value;
-        //this.neighbours = new LinkedList<>();
-        //this.neighbourWeight = new HashMap<>();
     }
 
+    /**
+     * Retrieves the key of this node.
+     *
+     * @return The key of this node.
+     */
     @Override
     public Key<LatLongId> getKey() {
         return key;
     }
 
+    /**
+     * Retrieves the value of this node.
+     *
+     * @return The value of this node.
+     */
     @Override
     public String getValue() {
         return value;
     }
 
-    /*
-    @Override
-    public List<Node<String, LatLongId>> getNeighbours() {
-        return neighbours;
-    }
-
-    @Override
-    public Node<String, LatLongId> getNeighbour(final KeyLatLongId<LatLongId> key) {
-        return neighbours.stream().filter(p -> key.equals(p.getKey())).findFirst().orElse(null);
-    }
-
-    @Override
-    public boolean addNeighbour(Node<String, LatLongId> neighbour) {
-        try {
-            neighbours.add(neighbour);
-            neighbourWeight.put(neighbour, getDistance(this, neighbour));
-            return true;
-        } catch (Exception e) {
-            System.out.println("exception while adding neighbour");
-            throw e;
-        }
-    }
-
-    public boolean addNeighbour(Node<String, LatLongId> neighbour, Double weight) {
-        try {
-            neighbours.add(neighbour);
-            neighbourWeight.put(neighbour, weight);
-            return true;
-        } catch (Exception e) {
-            System.out.println("exception while adding neighbour");
-            throw e;
-        }
-    }
-
-    public Map<Node<String, LatLongId>, Double> getNeighbourWeight() {
-        return neighbourWeight;
-    }
-
-    private Double getDistance(Node<String, LatLongId> node1, Node<String, LatLongId> node2) {
-        return Math.sqrt(Math.pow(node1.getKey().getValue().getLatitude() - node2.getKey().getValue().getLatitude(), 2)
-                + Math.pow(node1.getKey().getValue().getLongitude() - node2.getKey().getValue().getLongitude(), 2));
-    }
+    /**
+     * Returns a string representation of this NodeALG object.
+     * The string representation includes the key and value of the node.
+     *
+     * @return A string representation of this NodeALG object.
      */
-
     @Override
     public String toString() {
         return "NodeALG {" +
@@ -86,6 +58,14 @@ public class NodeALG implements Node<String, LatLongId> {
                 '}';
     }
 
+
+    /**
+     * Checks if this NodeALG is equal to the given object.
+     * Two NodeALG objects are considered equal if their keys and values are equal.
+     *
+     * @param o The object to compare.
+     * @return True if this NodeALG is equal to the given object, false otherwise.
+     */
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -94,6 +74,12 @@ public class NodeALG implements Node<String, LatLongId> {
         return getKey().equals(nodeALG.getKey()) && getValue().equals(nodeALG.getValue());
     }
 
+    /**
+     * Computes the hash code of this NodeALG object.
+     * The hash code is computed based on the hash codes of the key and value.
+     *
+     * @return The hash code of this NodeALG object.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(getKey(), getValue());

@@ -1,45 +1,30 @@
 package info6205.Graph;
-
-
-
 import info6205.Graph.Utils.IndexMinPQ;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * This is an Undirected graph, which extends EdgeWeightedListGraph
+ * @param <NodeValue> Type of value the Node or vertices hold for this graph
+ * @param <NodeKeyValue> Type of unique ID for a node or vertices for this graph
+ * @param <EdgeWeight> Type of Edge Weight the edge will represent for this graph, this needs to implement Comparable
+ */
 public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight extends Comparable<EdgeWeight>>
         extends EdgeWeightedListGraph<NodeValue, NodeKeyValue, EdgeWeight> {
 
+    /**
+     * This contains the implementation of the Edge Creator for edge creation
+     */
     private final EdgeCreator<NodeValue, NodeKeyValue, EdgeWeight> edgeCreator;
 
+    /**
+     *
+     * @param edgeCreator Edge creator used for Edge Creations
+     */
     public UndirectedEdgeWeighedListGraph(EdgeCreator<NodeValue, NodeKeyValue, EdgeWeight> edgeCreator) {
         super();
         this.edgeCreator = edgeCreator;
-    }
-
-
-
-    //how to stop this method being called if weighted Edge is used
-    @Override
-    protected boolean addNeighbour(Node<NodeValue, NodeKeyValue> nodeValue1, Node<NodeValue, NodeKeyValue> nodeValue2,
-                                   EdgeWeight edgeWeight) {
-        try {
-            if (!nodes.containsKey(nodeValue1.getKey())) {
-                addNode(nodeValue1);
-            }
-
-            if (!nodes.containsKey(nodeValue2.getKey())) {
-                addNode(nodeValue2);
-            }
-            neighbourMap.get(nodeValue1.getKey()).add(edgeCreator.createEdge(nodeValue1, nodeValue2, edgeWeight));
-            neighbourMap.get(nodeValue2.getKey()).add(edgeCreator.createEdge(nodeValue2, nodeValue1, edgeWeight));
-            return true;
-
-        } catch (Exception e) {
-            System.out.println("Error while adding neighbour e: " + e);
-            return false;
-        }
     }
 
     @Override
@@ -47,6 +32,13 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
         return edges;
     }
 
+    /**
+     * Adds Undirected edges between given nodes with the given weight
+     * @param node1 first node of the edge
+     * @param node2 second node of the edge
+     * @param edgeWeight weight between these nodes
+     * @return return true if created or false in not
+     */
     @Override
     public boolean addEdge(Node<NodeValue, NodeKeyValue> node1, Node<NodeValue, NodeKeyValue> node2, EdgeWeight edgeWeight) {
         try {
@@ -71,6 +63,37 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
         }
     }
 
+    /**
+     * add node1 and node2 as each others neighbour with the given weight similar to addEdge
+     * this method should be removed and added to addEdge
+     * @param nodeValue1 first node
+     * @param nodeValue2 second node
+     * @param edgeWeight edge weight between these provided nodes
+     * @return return true if added or false in not
+     */
+    //how to stop this method being called if weighted Edge is used
+    @Override
+    protected boolean addNeighbour(Node<NodeValue, NodeKeyValue> nodeValue1, Node<NodeValue, NodeKeyValue> nodeValue2,
+                                   EdgeWeight edgeWeight) {
+        try {
+            if (!nodes.containsKey(nodeValue1.getKey())) {
+                addNode(nodeValue1);
+            }
+
+            if (!nodes.containsKey(nodeValue2.getKey())) {
+                addNode(nodeValue2);
+            }
+            neighbourMap.get(nodeValue1.getKey()).add(edgeCreator.createEdge(nodeValue1, nodeValue2, edgeWeight));
+            neighbourMap.get(nodeValue2.getKey()).add(edgeCreator.createEdge(nodeValue2, nodeValue1, edgeWeight));
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error while adding neighbour e: " + e);
+            return false;
+        }
+    }
+
+
     public void test() {
         Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge = this.neighbourMap.get(getNodes().get(0).getKey()).get(0);
         if (this.edges.containsKey(edge)) {
@@ -79,6 +102,12 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
     }
 
 
+    /**
+     * This creates MST by Eager Prims algorithm, it also uses IndexMinPQ to store object of SingleNodeEdgeWeight
+     * for an index.
+     * <a href="https://algs4.cs.princeton.edu/24pq">Source of IndexMinPQ</a>
+     * @return returns ans UndirectedEdgeWeighedListGraph object similar to this class
+     */
     public UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight> getMSTByPrims() {
         try {
 
@@ -188,7 +217,11 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
         }
     }
 
-
+    /**
+     * Not used should not be used
+     * @param edge
+     */
+    @Deprecated
     public void deleteEdge(Edge<Node<NodeValue, NodeKeyValue>, EdgeWeight> edge) {
         try {
 
@@ -212,6 +245,12 @@ public class UndirectedEdgeWeighedListGraph<NodeValue, NodeKeyValue, EdgeWeight 
 
     }
 
+    /**
+     * This is a class Edge Weight and a Node used in getMSTByPrims
+     * @param <EdgeWeight> type of Edge Weight the edge will represent for this graph, this needs to implement Comparable
+     * @param <NodeValue> value contained in the node present in this object
+     * @param <NodeKeyValue> Type of unique ID for a node or vertices present in this object
+     */
     static class SingleNodeEdgeWeight<EdgeWeight extends Comparable<EdgeWeight>, NodeValue, NodeKeyValue>
             implements Comparable<SingleNodeEdgeWeight<EdgeWeight, NodeValue, NodeKeyValue>> {
 

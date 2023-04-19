@@ -6,6 +6,12 @@ import info6205.Graph.Node;
 
 import java.util.Objects;
 
+
+/**
+ * Represents an edge in a graph data structure, connecting two nodes of type "Node<String, LatLongId>"
+ * and with a weight of type "Double".
+ * Implements the "Edge" interface for generic edge types in a graph.
+ */
 public class EdgeALG implements Edge<Node<String, LatLongId>, Double> {
 
     private final Node<String, LatLongId> firstNode;
